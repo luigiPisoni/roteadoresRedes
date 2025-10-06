@@ -1,0 +1,5 @@
+O programa pode ser compilado usando o comando:
+gcc *.c -o out
+
+Com isso, podemos inicializar o roteador. Para isso, usamos o comando:
+./out N, onde N e o ID do roteador a ser inicializado. Os valores vao de 1 ate 10
