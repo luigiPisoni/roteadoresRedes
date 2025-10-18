@@ -23,7 +23,7 @@ Fila fila_e;
 Fila fila_s;
 
 void get_roteadores() {
-  FILE *f = fopen(".config/roteadores.config", "r");
+  FILE *f = fopen("config/roteadores.config", "r");
   if (f == NULL) {
     printf("erro ao ler o arquivo roteadores.config");
     return;
@@ -57,7 +57,7 @@ void get_roteadores() {
 }
 
 void get_enlaces() {
-  FILE *f = fopen(".config/enlaces.config", "r");
+  FILE *f = fopen("config/enlaces.config", "r");
   if (f == NULL) {
     printf("erro ao ler o arquivo enlaces.config");
     return;
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
   get_roteadores();
   get_enlaces(); // adiciona os enlaces no vetor de adjacencia
 
-  // -------    INICIALIZACAO DE THREADS   -------
+  // -------    INICIALIZACAO DE THREADS    -------
   if (pthread_create(&thread_handler, NULL, &handler, NULL) != 0) {
     printf("ERRO: criacao de thread handler falhou");
     return -1;

@@ -3,3 +3,9 @@ gcc *.c -o out
 
 Com isso, podemos inicializar o roteador. Para isso, usamos o comando:
 ./out N, onde N e o ID do roteador a ser inicializado. Os valores vao de 1 ate 10
+
+Para enviar uma mensagem de dado a outro roteador:
+enviar N M, onde N e o id do roteador de destino e M a mensagem a ser enviada
+
+Para enviar uma mensagem de controle a outro roteador:
+controle N M, onde N e o id do roteador de destino e M a mensagem a ser enviada

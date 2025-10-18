@@ -14,7 +14,17 @@ void terminal(void *arg) {
     //   printf("%s %d %s", comando, id_destino, conteudo);
     Mensagem msg;
 
-    msg.tipo = DADO;
+    if (strcmp(comando, "enviar") == 0) {
+      // printf("dado");
+      msg.tipo = DADO;
+    } else if (strcmp(comando, "controle") == 0) {
+      // printf("controle");
+      msg.tipo = CONTROLE;
+    } else {
+      printf("Comando invalido");
+      return;
+    }
+
     msg.id_origem = meu_id;
     msg.id_destino = id_destino;
     strcpy(msg.payload, conteudo);

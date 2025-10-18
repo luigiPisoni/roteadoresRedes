@@ -54,7 +54,13 @@ void receiver(void *arg) {
     // print details of the client/peer and the data received
     // printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr),
     //        ntohs(si_other.sin_port));
-    printf("R%d: %s\n", msg.id_origem, msg.payload);
+
+    // printf("%d %s", msg.id_origem, msg.payload);
+
+    fila_e.msg[fila_e.first] = msg;
+    fila_e.first = fila_e.next;
+
+    sem_post(&fila_e.sem);
   }
 
   close(s);
