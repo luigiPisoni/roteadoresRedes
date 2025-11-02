@@ -55,11 +55,13 @@ void receiver(void *arg) {
     // printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr),
     //        ntohs(si_other.sin_port));
 
-    // printf("%d %s", msg.id_origem, msg.payload);
+    // printf("%d %s", msg.id_origem, msg.payload.texto);
+    pthread_mutex_lock(&fila_e.mutex);
 
-    fila_e.msg[fila_e.first] = msg;
-    fila_e.first = fila_e.next;
+    fila_e.msg[fila_e.next] = msg;
+    fila_e.next = (fila_e.next + 1) % 10;
 
+    pthread_mutex_unlock(&fila_e.mutex);
     sem_post(&fila_e.sem);
   }
 

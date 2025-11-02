@@ -16,7 +16,10 @@ typedef struct {
   TipoMensagem tipo;
   int id_origem;
   int id_destino;
-  char payload[100];
+  union {
+    char texto[100];
+    int v_distancia[MAX_ROTEADORES][2];
+  } payload;
 } Mensagem;
 
 typedef struct {
@@ -33,3 +36,4 @@ extern Fila fila_e;
 extern Fila fila_s;
 extern int meu_id;
 extern Roteador *roteadores[MAX_ROTEADORES];
+extern int v_distancia[MAX_ROTEADORES][2];

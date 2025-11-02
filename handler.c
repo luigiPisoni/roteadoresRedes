@@ -9,9 +9,11 @@ void *handler(void *arg) {
     pthread_mutex_lock(&fila_e.mutex);
 
     Mensagem msg = fila_e.msg[fila_e.first];
+    fila_e.first = (fila_e.first + 1) % 10;
+
     if (msg.id_destino == meu_id) {
       if (msg.tipo == DADO) {
-        printf("R%d: %s\n", msg.id_origem, msg.payload);
+        printf("R%d: %s\n", msg.id_origem, msg.payload.texto);
       } else {
         printf("R%d: CONTROLE!!!\n", msg.id_origem);
       }

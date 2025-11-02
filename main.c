@@ -3,6 +3,7 @@
 #include "headers/roteador.h"
 #include "headers/sender.h"
 #include "headers/terminal.h"
+#include "headers/updater.h"
 #include "pthread.h"
 #include <arpa/inet.h>
 #include <bits/pthreadtypes.h>
@@ -11,13 +12,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
-#include <unistd.h>
 
-pthread_t thread_receiver, thread_sender, thread_handler, thread_terminal;
+pthread_t thread_receiver, thread_sender, thread_handler, thread_terminal,
+    thread_updater;
 
 int meu_id;
-int adjacencia[MAX_ROTEADORES]; // o index representa o roteador de destino
-Roteador *roteadores[];
+int v_distancia[MAX_ROTEADORES][2]; // o index representa o roteador de destino
+Roteador *roteadores[MAX_ROTEADORES];
 
 Fila fila_e;
 Fila fila_s;
@@ -32,7 +33,6 @@ void get_roteadores() {
   int id, porta;
   char ip[16];
 
-  // printf("aiusdiu9hyysad");
   while (fscanf(f, "%d %d %15s", &id, &porta, ip) == 3) {
     Roteador *novo_roteador = malloc(sizeof(Roteador));
 
@@ -41,7 +41,6 @@ void get_roteadores() {
       fclose(f);
       return;
     }
-    // printf("%d %d", id, porta);
     novo_roteador->id = id;
     novo_roteador->porta = porta;
     strncpy(novo_roteador->ip, ip, 15);
@@ -63,24 +62,25 @@ void get_enlaces() {
     return;
   }
 
-  // esse for faz com que
-  for (int i = 0; i < MAX_ROTEADORES; i++) {
-    adjacencia[i] = -1;
-  }
-  adjacencia[meu_id] = 0; // o custo de 1 pra ele mesmo e 0
-  int id_origem, id_destino, custo;
+  int id_origem, id_destino, custo, i = 0;
+  memset(v_distancia, 0, sizeof(v_distancia));
 
   while (fscanf(f, "%d %d %d", &id_origem, &id_destino, &custo) == 3) {
-    // printf("%d %d %d\n", id_origem, id_destino, custo);
-    if (id_origem == meu_id) {
-      adjacencia[id_destino] = custo;
-    } else if (id_destino == meu_id) {
-      adjacencia[id_origem] = custo;
+
+    if (id_destino == meu_id) {
+      v_distancia[i][0] = id_origem;
+      v_distancia[i][1] = custo;
+      i++;
+
+    } else if (id_origem == meu_id) {
+      v_distancia[i][0] = id_destino;
+      v_distancia[i][1] = custo;
+      i++;
     }
   }
-  return;
+  // return;
   for (int i = 0; i < MAX_ROTEADORES; i++) {
-    printf("%d, ", adjacencia[i]);
+    printf("(%d, %d)  ", v_distancia[i][0], v_distancia[i][1]);
   }
   printf("\n");
 }
@@ -109,28 +109,33 @@ int main(int argc, char *argv[]) {
   iniciar_fila(&fila_s);
 
   get_roteadores();
-  get_enlaces(); // adiciona os enlaces no vetor de adjacencia
+  get_enlaces(); // adiciona os enlaces no v_distancia
 
   // -------    INICIALIZACAO DE THREADS    -------
   if (pthread_create(&thread_handler, NULL, &handler, NULL) != 0) {
-    printf("ERRO: criacao de thread handler falhou");
+    printf("ERRO: criacao de thread HANDLER falhou");
     return -1;
   }
   if (pthread_create(&thread_receiver, NULL, &receiver, NULL) != 0) {
-    printf("ERRO: criacao de thread receiver falhou");
+    printf("ERRO: criacao de thread RECEIVER falhou");
     return -1;
   }
   if (pthread_create(&thread_sender, NULL, &sender, NULL) != 0) {
-    printf("ERRO: criacao de thread  falhou");
+    printf("ERRO: criacao de thread SENDER falhou");
+    return -1;
+  }
+  if (pthread_create(&thread_updater, NULL, &send_distance, NULL) != 0) {
+    printf("ERRO: criacao de thread UPDATER falhou");
     return -1;
   }
   if (pthread_create(&thread_terminal, NULL, &terminal, NULL) != 0) {
-    printf("ERRO: criacao de thread terminal falhou");
+    printf("ERRO: criacao de thread TERMINAL falhou");
     return -1;
   }
 
   pthread_join(thread_handler, NULL);
   pthread_join(thread_receiver, NULL);
   pthread_join(thread_sender, NULL);
+  pthread_join(thread_updater, NULL);
   pthread_join(thread_terminal, NULL);
 }

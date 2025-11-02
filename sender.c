@@ -48,6 +48,7 @@ void sender(void *arg) {
     pthread_mutex_lock(&fila_s.mutex);
 
     Mensagem msg = fila_s.msg[fila_s.first];
+    fila_s.first = (fila_s.first + 1) % 10;
     send_msg(msg);
 
     // tratamento pra quando a fila de entrada de outro roteador estiver cheia
