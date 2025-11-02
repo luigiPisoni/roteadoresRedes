@@ -1,6 +1,7 @@
 #include "pthread.h"
 #include <pthread.h>
 #include <semaphore.h>
+#include <time.h>
 
 #define MAX_ROTEADORES 10
 
@@ -13,12 +14,22 @@ typedef struct {
 } Roteador;
 
 typedef struct {
+  int destino;
+  int custo;
+} Distancia;
+
+typedef struct {
+  time_t ultima_mensagem;
+  Distancia v_distancia[MAX_ROTEADORES];
+} TabelaDistancia;
+
+typedef struct {
   TipoMensagem tipo;
   int id_origem;
   int id_destino;
   union {
     char texto[100];
-    int v_distancia[MAX_ROTEADORES][2];
+    Distancia v_distancia[MAX_ROTEADORES];
   } payload;
 } Mensagem;
 
@@ -36,4 +47,5 @@ extern Fila fila_e;
 extern Fila fila_s;
 extern int meu_id;
 extern Roteador *roteadores[MAX_ROTEADORES];
-extern int v_distancia[MAX_ROTEADORES][2];
+extern Distancia v_distancia[MAX_ROTEADORES];
+extern TabelaDistancia tabela_distancia[MAX_ROTEADORES];

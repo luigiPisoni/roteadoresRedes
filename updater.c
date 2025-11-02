@@ -5,12 +5,11 @@
 
 void send_distance() {
   while (1) {
-    // printf("alo");
-    sleep(5);
+    sleep(10);
     int para_enviar[MAX_ROTEADORES], j = 0;
     for (int i = 0; i < MAX_ROTEADORES; i++) {
-      if (v_distancia[i][0] > 0) {
-        para_enviar[j] = v_distancia[i][0];
+      if (v_distancia[i].destino > 0) {
+        para_enviar[j] = v_distancia[i].destino;
         j++;
       }
     }
@@ -24,8 +23,8 @@ void send_distance() {
       // transfere os dados do vetor distancia desse roteador pro payload da
       // mensagem
       for (int i = 0; i < MAX_ROTEADORES; i++) {
-        msg_controle.payload.v_distancia[i][0] = v_distancia[i][0];
-        msg_controle.payload.v_distancia[i][1] = v_distancia[i][1];
+        msg_controle.payload.v_distancia[i].destino = v_distancia[i].destino;
+        msg_controle.payload.v_distancia[i].custo = v_distancia[i].custo;
       }
 
       pthread_mutex_lock(&fila_s.mutex);
@@ -35,6 +34,13 @@ void send_distance() {
 
       pthread_mutex_unlock(&fila_s.mutex);
       sem_post(&fila_s.sem);
+
+      printf("Enviando para R%d: ", msg_controle.id_destino);
+      for (int j = 0; j < MAX_ROTEADORES; j++) {
+        printf("(%d, %d)", msg_controle.payload.v_distancia[j].destino,
+               msg_controle.payload.v_distancia[j].custo);
+      }
+      printf("\n");
     }
   }
 }

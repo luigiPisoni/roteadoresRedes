@@ -17,7 +17,8 @@ pthread_t thread_receiver, thread_sender, thread_handler, thread_terminal,
     thread_updater;
 
 int meu_id;
-int v_distancia[MAX_ROTEADORES][2]; // o index representa o roteador de destino
+Distancia v_distancia[MAX_ROTEADORES];
+TabelaDistancia tabela_distancia[MAX_ROTEADORES];
 Roteador *roteadores[MAX_ROTEADORES];
 
 Fila fila_e;
@@ -63,24 +64,29 @@ void get_enlaces() {
   }
 
   int id_origem, id_destino, custo, i = 0;
-  memset(v_distancia, 0, sizeof(v_distancia));
+  memset(v_distancia, 0,
+         sizeof(v_distancia)); // define o tamanho do vetor distancia pra nao
+                               // encher de lixo
+  memset(tabela_distancia, 0,
+         sizeof(tabela_distancia)); // define o tamanho da tabela de distancia
+                                    // pra nao encher de lixo
 
   while (fscanf(f, "%d %d %d", &id_origem, &id_destino, &custo) == 3) {
 
     if (id_destino == meu_id) {
-      v_distancia[i][0] = id_origem;
-      v_distancia[i][1] = custo;
+      v_distancia[i].destino = id_origem;
+      v_distancia[i].custo = custo;
       i++;
 
     } else if (id_origem == meu_id) {
-      v_distancia[i][0] = id_destino;
-      v_distancia[i][1] = custo;
+      v_distancia[i].destino = id_destino;
+      v_distancia[i].custo = custo;
       i++;
     }
   }
-  // return;
+  return;
   for (int i = 0; i < MAX_ROTEADORES; i++) {
-    printf("(%d, %d)  ", v_distancia[i][0], v_distancia[i][1]);
+    printf("(%d, %d)  ", v_distancia[i].destino, v_distancia[i].custo);
   }
   printf("\n");
 }
